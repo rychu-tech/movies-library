@@ -1,5 +1,6 @@
 ﻿using backend.Models;
 using backend.Repositories;
+using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,8 +11,10 @@ namespace backend.Controllers
     public class MovieController : ControllerBase
     {
         private readonly IMovieRepository _movieRepository;
-        public MovieController(IMovieRepository movieRepository) {
+        private readonly IMovieService _movieService;
+        public MovieController(IMovieRepository movieRepository, IMovieService movieService) {
             _movieRepository = movieRepository;
+            _movieService = movieService;
         }
 
         [HttpGet]
@@ -52,6 +55,22 @@ namespace backend.Controllers
             }
             await _movieRepository.Delete(movieToDelete.Id);
             return NoContent();
+        }
+
+        [HttpGet("import")]
+        public async Task<ActionResult<IEnumerable<Movie>>> ImportMoviesFromExternalApi()
+        {
+            try
+            {
+                var createdMovies = await _movieService.ImportFromExternalApi();
+
+                return CreatedAtAction(nameof(GetMovies), createdMovies);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred during movie import: {ex.Message}");
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred during movie import.");
+            }
         }
     }
 }

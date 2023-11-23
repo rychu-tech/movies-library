@@ -1,4 +1,5 @@
-﻿using backend.Contexts;
+﻿using System.Text.Json;
+using backend.Contexts;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,6 +46,11 @@ namespace backend.Repositories
         {
             _context.Entry(movie).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Movie> GetByExternalId(int externalId)
+        {
+            return await _context.movies.FirstOrDefaultAsync(m => m.ExternalId == externalId);
         }
     }
 }

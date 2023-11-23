@@ -7,9 +7,9 @@ namespace backend.Models
         [Key]
         public int Id { get; set; }
         public required string Title { get; set; }
-        public string? ReleaseYear { get; set; }
+        public int? ReleaseYear { get; set; }
         public bool Active { get; set; }
-        public string? ExternalId { get; set; }
+        public int? ExternalId { get; set; }
 
 
         public Movie()
