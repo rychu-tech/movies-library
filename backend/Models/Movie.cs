@@ -6,11 +6,13 @@ namespace backend.Models
     {
         [Key]
         public int Id { get; set; }
-        public required string Title { get; set; }
+
+        [Required]
+        public string Title { get; set; }
+
         public int? ReleaseYear { get; set; }
         public bool Active { get; set; }
         public int? ExternalId { get; set; }
-
 
         public Movie()
         {
