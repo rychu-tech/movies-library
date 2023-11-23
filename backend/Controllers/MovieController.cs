@@ -34,10 +34,10 @@ namespace backend.Controllers
             var newMovie = await _movieRepository.Create(movie);
             return CreatedAtAction(nameof(GetMovies), new {Id = newMovie.Id}, newMovie);
         }
-        [HttpPut("{movieId}")]
-        public async Task<ActionResult> EditMovie(int movieId, [FromBody] Movie movie)
+        [HttpPut("{MovieId}")]
+        public async Task<ActionResult> EditMovie(int MovieId, [FromBody] Movie movie)
         {
-            if (movieId != movie.Id)
+            if (MovieId != movie.Id)
             {
                 return BadRequest();
             }
@@ -45,10 +45,10 @@ namespace backend.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{movieId}")]
-        public async Task<ActionResult> Delete(int movieId)
+        [HttpDelete("{MovieId}")]
+        public async Task<ActionResult> Delete(int MovieId)
         {
-            var movieToDelete = await _movieRepository.Get(movieId);
+            var movieToDelete = await _movieRepository.Get(MovieId);
             if (movieToDelete == null)
             {
                 return NotFound();

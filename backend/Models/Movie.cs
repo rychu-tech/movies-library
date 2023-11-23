@@ -15,6 +15,7 @@ namespace backend.Models
         public Movie()
         {
             Active = true;
+            ExternalId = null;
         }
     }
 }
