@@ -9,9 +9,9 @@ docker-compose up --build
 After running this command wait until all containers are running.
 
 ## Access
-Backend is running on port 8081 and the documentation of used endpoints is here: http://localhost:8081/swagger/index.html
-Frontend is running on port 8080 inside docker, however you can access the app: http://localhost:5173/
-Database is a simple one-table SQLite file database.
+* Backend is running on port 8081 and the documentation of used endpoints is here: http://localhost:8081/swagger/index.html
+* Frontend is running on port 8080 inside docker, however you can access the app: http://localhost:5173/
+* Database is a simple one-table SQLite file database.
 
 ## Everything else you need to know
 * There is backend.Tests folder that is another project added to sln that contains simple tests for most frequently used API endpoints. You can run it from Visual Studio IDE (that's how I did it, not sure if you can do it from command line or from inside Docker container).
