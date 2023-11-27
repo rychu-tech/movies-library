@@ -57,6 +57,18 @@ namespace backend.Controllers
             return NoContent();
         }
 
+        [HttpPatch("{MovieId}")]
+        public async Task<ActionResult> Restore(int MovieId)
+        {
+            var movieToRestore = await _movieRepository.Get(MovieId);
+            if (movieToRestore == null)
+            {
+                return NotFound();
+            }
+            await _movieRepository.Restore(movieToRestore.Id);
+            return NoContent();
+        }
+
         [HttpGet("import")]
         public async Task<ActionResult<IEnumerable<Movie>>> ImportMoviesFromExternalApi()
         {

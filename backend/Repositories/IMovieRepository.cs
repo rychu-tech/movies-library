@@ -9,6 +9,7 @@ namespace backend.Repositories
         Task<Movie> Create(Movie movie);
         Task Update(Movie movie);
         Task Delete(int movieId);
+        Task Restore(int movieId);
         Task<Movie> GetByExternalId(int externalId);
     }
 }

@@ -32,6 +32,18 @@ namespace backend.Repositories
 
         }
 
+        public async Task Restore(int movieId)
+        {
+            var movieToRestore = await _context.movies.FindAsync(movieId);
+            if (movieToRestore != null)
+            {
+                movieToRestore.Active = true;
+                _context.Entry(movieToRestore).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+            }
+
+        }
+
         public async Task<IEnumerable<Movie>> Get()
         {
             return await _context.movies.ToListAsync();  

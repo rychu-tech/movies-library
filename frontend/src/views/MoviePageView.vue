@@ -2,13 +2,13 @@
   <div class="container mt-5 text-center">
     <div class="d-flex justify-content-between mb-3">
       <div>
-        <button @click="importMovies" class="btn btn-primary">
-          Import Movies
+        <button @click="importMovies" class="btn btn-success">
+          <i class="bi bi-download"></i> Import Movies
         </button>
       </div>
       <h1 class="mb-0">Movie Page</h1>
       <div>
-        <add-movie-form @submit="addMovie" />
+        <add-movie-form @submitStore="addMovie" />
       </div>
     </div>
 
@@ -23,16 +23,32 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="movie in movieList" :key="movie.id" :class="{ 'text-decoration-line-through': movie.active === false }">
+            <tr
+              v-for="movie in movieList"
+              :key="movie.id"
+              :class="{
+                'text-decoration-line-through': movie.active === false,
+              }"
+            >
               <td>{{ movie.title }}</td>
               <td>{{ movie.releaseYear }}</td>
               <td v-if="movie.active">
-                <button @click="deleteMovie(movie.id)" class="btn btn-danger">
-                  <i class="bi bi-trash"></i> Delete
-                </button>
+                <div class="d-flex justify-content-center">
+                  <edit-movie-form
+                    :movieData="movie"
+                    @submitEdit="editMovie"
+                    class="me-2"
+                  />
+                  <delete-confirmation-modal
+                    :movieId="movie.id"
+                    @submitDelete="deleteMovie"
+                  />
+                </div>
               </td>
               <td v-else>
-                <span></span>
+                <button @click="restoreMovie(movie.id)" class="btn btn-success">
+                  <i class="bi bi-arrow-repeat"></i> Restore
+                </button>
               </td>
             </tr>
           </tbody>
@@ -43,12 +59,17 @@
 </template>
 
 <script>
-import axios from 'axios';
-import AddMovieForm from './AddMovieForm.vue';
+import AddMovieForm from "./AddMovieForm.vue";
+import EditMovieForm from "./EditMovieForm.vue";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal.vue";
+import { httpService } from "../router/HttpService";
+import { useVuelidate } from "@vuelidate/core";
 
 export default {
   components: {
-    'add-movie-form': AddMovieForm,
+    "add-movie-form": AddMovieForm,
+    "edit-movie-form": EditMovieForm,
+    "delete-confirmation-modal": DeleteConfirmationModal,
   },
   data() {
     return {
@@ -59,44 +80,56 @@ export default {
     this.fetchMovies();
   },
   methods: {
-    fetchMovies() {
-      axios.get(`${this.BACKEND_URL}/movies`)
-        .then(response => {
-          this.movieList = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching movies:', error);
-        });
+    async fetchMovies() {
+      try {
+        const response = await httpService.fetchMovies();
+        this.movieList = response.data;
+      } catch (error) {
+        window.alert("Error fetching movies!");
+      }
     },
-    deleteMovie(movieId) {
-      axios.delete(`${this.BACKEND_URL}/movies/${movieId}`)
-        .then(response => {
-          this.fetchMovies();
-        })
-        .catch(error => {
-          console.error('Error deleting movie:', error);
-        });
+    async deleteMovie(movieId) {
+      try {
+        const response = await httpService.deleteMovie(movieId);
+        this.fetchMovies();
+      } catch (error) {
+        window.alert("Error deleting movie!");
+      }
     },
-    importMovies() {
-      axios.get(`${this.BACKEND_URL}/movies/import`)
-        .then(response => {
-          this.fetchMovies();
-          if (response.data.length === 0) {
-            window.alert('There are currently no movies available.');
-          }
-        })
-        .catch(error => {
-          console.error('Error importing movies:', error);
-        });
+    async restoreMovie(movieId) {
+      try {
+        const response = await httpService.restoreMovie(movieId);
+        this.fetchMovies();
+      } catch (error) {
+        window.alert("Error restoring movie!");
+      }
     },
-    addMovie(formData) {
-      axios.post(`${this.BACKEND_URL}/movies`, formData)
-        .then(response => {
-          this.fetchMovies();
-        })
-        .catch(error => {
-          console.error('Error adding movie:', error);
-        });
+    async importMovies(movieId) {
+      try {
+        const response = await httpService.importMovies();
+        if (response.data.length === 0) {
+          window.alert("There are currently no movies available.");
+        }
+        this.fetchMovies();
+      } catch (error) {
+        window.alert("Error importing movies!");
+      }
+    },
+    async addMovie(formData) {
+      try {
+        const response = await httpService.addMovie(formData);
+        this.fetchMovies();
+      } catch (error) {
+        window.alert("Error adding movie!");
+      }
+    },
+    async editMovie(formData) {
+      try {
+        const response = await httpService.editMovie(formData);
+        this.fetchMovies();
+      } catch (error) {
+        window.alert("Error editting movie!");
+      }
     },
   },
 };
@@ -108,7 +141,7 @@ export default {
 }
 
 .table-container {
-  width: 80%;
+  width: 100vw;
   max-height: 500px;
   overflow-y: auto;
 }
@@ -116,8 +149,7 @@ export default {
 .table-container thead th {
   position: sticky;
   top: 0;
-  background-color: white;
+  background-color: lightgray;
   z-index: 1;
 }
-
 </style>

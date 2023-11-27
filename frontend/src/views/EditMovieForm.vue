@@ -1,13 +1,13 @@
 <template>
   <div>
-    <button @click="showModal" class="btn btn-primary">
-      <i class="bi bi-plus"></i> Add Movie
+    <button @click="showModal" class="btn btn-warning">
+      <i class="bi bi-pencil"></i> Edit
     </button>
 
     <div v-if="isModalVisible" class="custom-modal">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">New Movie</h5>
+          <h5 class="modal-title">Edit Movie</h5>
           <button
             type="button"
             class="btn-close"
@@ -53,6 +53,12 @@ import { movieValidationRules } from "../validation/ValidationFunctions";
 import { useVuelidate } from "@vuelidate/core";
 
 export default {
+  props: {
+    movieData: {
+      type: Object,
+      default: () => ({ title: "", releaseYear: null, id: null }),
+    },
+  },
   setup() {
     return { v$: useVuelidate() };
   },
@@ -60,8 +66,9 @@ export default {
     return {
       isModalVisible: false,
       formData: {
-        title: "",
-        releaseYear: null,
+        title: this.movieData.title,
+        releaseYear: this.movieData.releaseYear,
+        id: this.movieData.id,
       },
     };
   },
@@ -76,17 +83,13 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
-      this.formData = {
-        title: "",
-        releaseYear: null,
-      };
     },
     handleSubmit() {
       if (handleFormValidation(this.v$)) {
         return;
       }
 
-      this.$emit("submitStore", this.formData);
+      this.$emit("submitEdit", this.formData);
       this.closeModal();
     },
   },
